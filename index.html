@@ -8,23 +8,66 @@
   <body>
   <canvas id="gameCanvas" width="800" height="600"></canvas>
   <script type="text/javascript">
+    const PADDLE_WIDTH = 100;
+    const PADDLE_HEIGHT = 10;
+    
   	let canvas, canvasContext;
+    let ballx = 75;
+    let ballxSpeed = 5;
+    let ballySpeed = 6;
+    let bally = 75;
+    let paddleX = 400;
+
+    const updateMousePos = (event) => {
+      let rect = canvas.getBoundingClientRect();
+      let root = document.documentElement;
+
+      let mouseX = event.clientX - rect.left - root.scrollLeft;
+
+      paddleX = mouseX - PADDLE_WIDTH / 2;
+
+    }
 
     window.onload = function(){
     	canvas = document.getElementById("gameCanvas");
     	canvasContext = canvas.getContext("2d");
 
-      canvasContext.fillStyle = '#000000';
-      canvasContext.fillRect(0,0,canvas.width,canvas.height);
+      let framesPerSecond = 30;
 
-      canvasContext.fillStyle = '#fff';
-      canvasContext.beginPath();
-      canvasContext.arc(100,100,10,0, Math.PI * 2, true);
-      canvasContext.fill();
+      setInterval(updateAll, 1000/30);
+
+      canvas.addEventListener('mousemove', updateMousePos);
+    }
+    const updateAll = () => {
+      moveAll();
+      drawAll();
     }
 
-    
-  	
+    const moveAll = () => {
+      ballx += ballxSpeed;
+      bally += ballySpeed;
+
+      if(ballx > canvas.width) ballxSpeed *= -1;
+      if(ballx < 0) ballxSpeed *= -1;
+      if(bally > canvas.height) ballySpeed *= -1;
+      if(bally < 0) ballySpeed *= -1;
+    }
+    const drawAll = () => {
+      colorRect(0,0,canvas.width,canvas.height, '#000');
+      colorCircle(ballx, bally, 10, '#fff');
+      colorRect(paddleX,canvas.height - 10,100, PADDLE_HEIGHT,PADDLE_WIDTH, '#fff');
+    }
+    const colorRect = (topLeftX, topLeftY, boxWidth, boxHeight, fillColor) => {
+      canvasContext.fillStyle = fillColor;
+      canvasContext.fillRect(topLeftX, topLeftY, boxWidth, boxHeight);
+    }
+
+    const colorCircle = (centerX, centerY, radius, fillColor) => {
+      canvasContext.fillStyle = fillColor;
+      canvasContext.beginPath();
+      canvasContext.arc(centerX,centerY,radius,0, Math.PI * 2, true);
+      canvasContext.fill();
+    }
 
   </script>
   </body>
